@@ -16,6 +16,10 @@ class ParagonChatDB(object):
             d[col[0]] = row[idx]
         return d
 
+    def replace_costumeparts_string():
+        return """REPLACE INTO costumepart (geom, tex1, tex2, fx, displayname, region, bodyset, color1, color2, character, costume, part, bodytype, bonescale, shoulderscale, , chestscale, waistscale, hipscale, legscale)
+            VALUES ('{geom}', '{tex1}', '{tex2}', '{fx}', '{displayname}', '{region}', '{bodyset}', '{color1}', '{color2}', '{character_id}', '{costume_id}', '{part}', '{bodytype}', '{shoulderscale}', '{chestscale}', '{waistscale}', '{hipscale}', '{legscale}');"""
+
     def _transact_query(self, sql_script):
         """
         Executes CREATE, UPDATE and DELETE queries in a BEGIN and COMMIT block, and performs basic error handling.
@@ -65,8 +69,7 @@ DELETE FROM costumepart
     WHERE character='{character_id}'
         AND costume='{costume_id}'
         AND part='{part}';
-REPLACE INTO costumepart (geom, tex1, tex2, fx, displayname, region, bodyset, color1, color2, character, costume, part)
-    VALUES ('{geom}', '{tex1}', '{tex2}', '{fx}', '{displayname}', '{region}', '{bodyset}', '{color1}', '{color2}', '{character_id}', '{costume_id}', '{part}');"""
+""" + replace_costumeparts_string()
             sql = sql.format(
                 character_id=character_id,
                 costume_id=costume_id,
@@ -100,12 +103,7 @@ DELETE FROM costumepart
         sql_script.write(sql)
 
         for i in costumeparts:
-            sql =\
-                """\
-REPLACE INTO costumepart (geom, tex1, tex2, fx, displayname, region, bodyset, color1, color2, character, costume, part)
-    VALUES ('{geom}', '{tex1}', '{tex2}', '{fx}', '{displayname}', '{region}', '{bodyset}', '{color1}', '{color2}', '{character_id}', '{costume_id}', '{part}');\
-                """
-            sql = sql.format(
+            sql = replace_costumeparts_string().format(
                 character_id=character_id,
                 costume_id=costume_id,
                 **i
