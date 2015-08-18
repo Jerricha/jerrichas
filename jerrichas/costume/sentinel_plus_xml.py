@@ -17,7 +17,7 @@ class SentinelPlusXML(BaseCostumeSave):
         :type fp: file
         """
         super()
-        self.parse(fp)
+        self.costume_map_list = self.parse(fp)
 
     def parse(self, fp):
         """
@@ -89,16 +89,51 @@ class SentinelPlusXML(BaseCostumeSave):
 
         return costume_map_list
 
-    def get_costumeparts(self):
+    def get_costumeparts(self, costume_id):
         """
+        :param costume_id: int between 0 and 9
         :returns: a mapping of /Sentinel+ costume elements to ParagonChatDB 'costumepart' columns
         """
         super()
-        return None
+        assert(0 <= costume_id <= 9)
+        if self.costume_map_list.__len__ < costume_id + 1:
+            raise IndexError
 
-    def get_scales(self):
+        nth_map = self.costume_map_list[costume_id]
+        result = []
+
+        for key in nth_map:
+            if key.isdigit():
+                result.append(nth_map[key])
+        return sorted(result, key = lambda k: k['part'])
+
+    def get_scales(self, costume_id):
         """
+        :param costume_id: int between 0 and 9
         :returns: a mapping of /Sentinel+ costume records to ParagonChatDB 'costume' columns.
         """
         super()
-        return None
+        assert(0 <= costume_id <= 9)
+        if self.costume_map_list.__len__ < costume_id + 1:
+            raise IndexError
+
+        nth_map = self.costume_map_list[costume_id]
+        result = {
+            'bodytype' : nth_map['bodytype'],
+            'skincolor' : nth_map['skincolor'],
+            'bodyscale' : nth_map['bodyscale'],
+            'bonescale' : nth_map['bonescale'],
+            'shoulderscale' : nth_map['shoulderscale'],
+            'chestscale' : nth_map['chestscale'],
+            'waistscale' : nth_map['waistscale'],
+            'hipscale' : nth_map['hipscale'],
+            'legscale' : nth_map['legscale'],
+            'headscales' : nth_map['headscales'],
+            'browscales' : nth_map['browscales'],
+            'cheekscales' : nth_map['cheekscales'],
+            'chinscales' : nth_map['chinscales'],
+            'craniumscales' : nth_map['craniumscales'],
+            'jawscales' : nth_map['jawscales'],
+            'nosescales' : nth_map['nosescales']
+        }
+        return result
